@@ -1,0 +1,11 @@
+*.class
+bin/
+gen/
+local.properties
+.classpath
+.project
+.gradletasknamecache
+.gradle/
+build/
+bin/
+
