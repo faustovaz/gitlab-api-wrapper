@@ -35,10 +35,22 @@ public class GitlabSnippet {
 		this.visibility = visibility;
 	}
 	
+	public String fileType() {
+		if(file_name != null) {
+			String[] parts = file_name.split("\\.");
+			if (parts.length > 1) {
+				String extension = parts[parts.length - 1];
+				return extension;
+			}
+		}
+		return "";
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("%s:%s - %s", title, file_name, description);
 	}
+	
 }
 
 class Author {
