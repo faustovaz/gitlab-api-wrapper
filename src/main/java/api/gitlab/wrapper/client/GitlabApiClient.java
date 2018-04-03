@@ -40,6 +40,7 @@ public class GitlabApiClient{
 	public String getContent(String url) {
 		try {
 			Response response = call(url);
+			checkResponse(response);
 			return response.body().string();			
 		}
 		catch(Exception e) {
@@ -100,10 +101,12 @@ public class GitlabApiClient{
 	public void checkResponse(Response response) throws Exception {
 		if(response != null && !response.isSuccessful()) {
 			Request request = response.request();
+			Integer httpCode = response.code();
+			response.close();
 			throw new Exception("Bad response. Request to " 
 					+ request.url().toString()
 					+ " returned HTTP code " 
-					+ response.code());
+					+ httpCode);
 		}
 	}
 	
