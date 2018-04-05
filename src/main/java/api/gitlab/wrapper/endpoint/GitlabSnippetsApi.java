@@ -39,16 +39,19 @@ public class GitlabSnippetsApi {
 	}
 	
 	public GitlabSnippet snippet(GitlabSnippet snippet){
-		Optional<JsonElement> json = apiClient().get(SNIPPETS_ENDPOINT, snippet.id);
+		Optional<JsonElement> json = apiClient()
+										.get(SNIPPETS_ENDPOINT, snippet.id);
 		if (json.isPresent()) {
-			GitlabSnippet loadedSnippet  = gson().fromJson(json.get(), GitlabSnippet.class);
+			GitlabSnippet loadedSnippet  = gson()
+									.fromJson(json.get(), GitlabSnippet.class);
 			return loadContent(loadedSnippet);
 		}
 		return new GitlabSnippet();
 	}
 	
 	public Boolean create(GitlabSnippet snippet) throws IOException {
-		Response response = apiClient().post(SNIPPETS_ENDPOINT, this.gson.toJsonTree(snippet));
+		Response response = apiClient().post(SNIPPETS_ENDPOINT, 
+												this.gson.toJsonTree(snippet));
 		return response.isSuccessful();
 	}
 	
@@ -63,7 +66,7 @@ public class GitlabSnippetsApi {
 	
 	public GitlabSnippet loadContent(GitlabSnippet snippet) {
 		if(snippet != null && snippet.raw_url != null) {
-			String content = apiClient.getContent(snippet.raw_url);
+			String content = apiClient.getRawContent(snippet.raw_url);
 			snippet.raw_url = content;
 		}
 		return snippet;

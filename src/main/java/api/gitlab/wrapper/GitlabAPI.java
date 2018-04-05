@@ -24,8 +24,8 @@ public class GitlabAPI {
 	
 	public GitlabSnippetsApi snippets() {
 		if (gitlabSnippetsApi == null)
-			gitlabSnippetsApi = new GitlabSnippetsApi(this.gitlabAPIUrl
-														,this.accessToken);
+			gitlabSnippetsApi = new GitlabSnippetsApi(this.gitlabAPIUrl, 
+														this.accessToken);
 		return gitlabSnippetsApi;
 	}
 	

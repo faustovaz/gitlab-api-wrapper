@@ -1,6 +1,7 @@
 package api.gitlab.wrapper.client;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Optional;
 
 import com.google.gson.JsonArray;
@@ -37,9 +38,9 @@ public class GitlabApiClient{
 		this.accessToken = accessToken;
 	}
 	
-	public String getContent(String url) {
+	public String getRawContent(String url) {
 		try {
-			Response response = call(url);
+			Response response = call(new URL(url));
 			checkResponse(response);
 			return response.body().string();			
 		}
@@ -108,6 +109,12 @@ public class GitlabApiClient{
 					+ " returned HTTP code " 
 					+ httpCode);
 		}
+	}
+	
+	public Response call(URL url) throws IOException {
+		Request request = new Request.Builder().url(url).build();
+		Call call = http.newCall(request);
+		return call.execute();
 	}
 	
 	public Response call(String endpoint) throws IOException {
