@@ -2,7 +2,6 @@ package api.gitlab.wrapper.client;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -14,7 +13,6 @@ import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Request.Builder;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
@@ -49,54 +47,71 @@ public class GitlabApiClient{
 		}
 	}
 	
-	public Optional<JsonElement> get(String endpoint, Integer id){
-		Optional<JsonElement> element = Optional.empty();
+	public JsonElement get(String endpoint, Integer id){
 		try {
 			Response response = call(endpoint,id);
 			checkResponse(response);
-			element = Optional.of(parser.parse(response.body().string()));
+			return parser.parse(response.body().string());
 		}
 		catch(Exception e) {
 			throw new GitlabApiException(e.getMessage(), e.getCause());
 		}
-		return element;
 	}
 	
-	public Optional<JsonArray> getAll(String endpoint){
-		Optional<JsonArray> elements = Optional.empty();
+	public JsonArray getAll(String endpoint){
 		try {
 			Response response = call(endpoint);
 			checkResponse(response);
-			elements = Optional.of(parser.parse(response.body().string()).getAsJsonArray());
+			return parser.parse(response.body().string()).getAsJsonArray();
 		}
 		catch(Exception e) {
 			throw new GitlabApiException(e.getMessage(), e.getCause());
 		}
-		return elements;
 	}
 	
-	public Response put(String endpoint, Integer id ,JsonElement json) throws IOException {
-		Builder requestBuilder = buildRequest(endpoint, id);
-		requestBuilder.put(RequestBody.create(
-				MediaType.parse("application/json"), 
-				json.getAsString())
-		);
-		return http.newCall(requestBuilder.build()).execute();
+	public JsonElement put(String endpoint, Integer id ,JsonElement json){
+		try {
+			Request request = buildRequest(endpoint, id)
+				.put(RequestBody.create(
+						MediaType.parse("application/json"), 
+						json.getAsString()))
+				.build();
+			Response response = http.newCall(request).execute();
+			checkResponse(response);
+			return parser.parse(response.body().string());				
+		}
+		catch(Exception e) {
+			throw new GitlabApiException(e.getMessage(), e.getCause());
+		}
 	}
 	
-	public Response delete(String endpoint, Integer id) throws IOException {
-		Builder requestBuilder = buildRequest(endpoint, id);
-		requestBuilder.delete();
-		return http.newCall(requestBuilder.build()).execute();
+	public void delete(String endpoint, Integer id){
+		try {
+			Request request = buildRequest(endpoint, id)
+							.delete()
+							.build();
+			Response response = http.newCall(request).execute();
+			checkResponse(response);
+		}
+		catch(Exception e) {
+			throw new GitlabApiException(e.getMessage(), e.getCause());
+		}
 	}
 	
-	public Response post(String endpoint, JsonElement json) throws IOException {
-		Builder requestBuilder = buildRequest(endpoint);
-		requestBuilder = requestBuilder.post(RequestBody.create(
-				MediaType.parse("application/json"), 
-				json.toString())
-		);
-		return http.newCall(requestBuilder.build()).execute();
+	public JsonElement post(String endpoint, JsonElement json){
+		try {
+			Request request = buildRequest(endpoint)
+				.post(RequestBody.create(
+							MediaType.parse("application/json"), 
+							json.getAsString()))
+				.build();
+			Response response = http.newCall(request).execute();
+			checkResponse(response);
+			return parser.parse(response.body().string());			
+		}
+		catch(Exception e) {
+			throw new GitlabApiException(e.getMessage(), e.getCause());
+		}
 	}
 	
 	public void checkResponse(Response response) throws Exception {

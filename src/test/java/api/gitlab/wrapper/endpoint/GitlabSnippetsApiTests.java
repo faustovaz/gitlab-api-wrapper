@@ -7,7 +7,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,16 +36,15 @@ public class GitlabSnippetsApiTests {
 	
 	@Test
 	public void shouldReturnAnEmptyList() {
-		Optional<JsonArray> optional = Optional.empty();
-		when(client.getAll(GitlabSnippetsApi.SNIPPETS_ENDPOINT)).thenReturn(optional);
+		JsonArray array = parser.parse("[]").getAsJsonArray();
+		when(client.getAll(GitlabSnippetsApi.SNIPPETS_ENDPOINT)).thenReturn(array);
 		List<GitlabSnippet> allSnippets = snippetsApi.allSnippets();
 		assertTrue(allSnippets.isEmpty());
 	}
 
 	@Test
 	public void shouldReturnSpecificSnippet() {
-		JsonParser parser = new JsonParser();
-		Optional<JsonElement> json = Optional.of(parser.parse("{'id': 1, 'title': 'title', 'file_name': 'file.java'}"));
+		JsonElement json = parser.parse("{'id': 1, 'title': 'title', 'file_name': 'file.java'}");
 		when(client.get(GitlabSnippetsApi.SNIPPETS_ENDPOINT, 1)).thenReturn(json);
 		GitlabSnippet snippet = snippetsApi.snippet(new GitlabSnippet(1));
 		assertEquals(snippet.id, new Integer(1));
@@ -56,11 +54,11 @@ public class GitlabSnippetsApiTests {
 	
 	@Test
 	public void shouldReturnAListOfSnippets() {
-		Optional<JsonArray> jsonList = Optional.of(parser.parse(
+		JsonArray jsonList = parser.parse(
 				"[{'id': 1, 'title': 'title', 'file_name': 'file.java'},"
 				+ "{'id': 2, 'title': 'title2', 'file_name': 'file2.java'},"
 				+ "{'id': 3, 'title': 'title3', 'file_name': 'file3.java'}]"
-		).getAsJsonArray());
+		).getAsJsonArray();
 		when(client.getAll(GitlabSnippetsApi.SNIPPETS_ENDPOINT)).thenReturn(jsonList);
 		List<GitlabSnippet> allSnippets = snippetsApi.allSnippets();
 		assertEquals(allSnippets.size(), 3);

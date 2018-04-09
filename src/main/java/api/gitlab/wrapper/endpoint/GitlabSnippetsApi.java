@@ -1,9 +1,7 @@
 package api.gitlab.wrapper.endpoint;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -11,7 +9,6 @@ import com.google.gson.JsonElement;
 
 import api.gitlab.wrapper.client.GitlabApiClient;
 import api.gitlab.wrapper.model.GitlabSnippet;
-import okhttp3.Response;
 
 
 public class GitlabSnippetsApi {
@@ -29,35 +26,27 @@ public class GitlabSnippetsApi {
 	}
 	
 	public List<GitlabSnippet> allSnippets(){
-		Optional<JsonArray> jsonArray = apiClient().getAll(SNIPPETS_ENDPOINT);
-		GitlabSnippet[] allSnippets = gson().fromJson(
-				jsonArray.orElse(new JsonArray()), 
-				GitlabSnippet[].class);
+		JsonArray jsonArray = apiClient().getAll(SNIPPETS_ENDPOINT);
+		GitlabSnippet[] allSnippets = gson().fromJson(jsonArray, GitlabSnippet[].class);
 		List<GitlabSnippet> snippets = Arrays.asList(allSnippets);
 		snippets.forEach(snippet -> this.loadContent(snippet));
 		return snippets;	
 	}
 	
 	public GitlabSnippet snippet(GitlabSnippet snippet){
-		Optional<JsonElement> json = apiClient()
-										.get(SNIPPETS_ENDPOINT, snippet.id);
-		if (json.isPresent()) {
-			GitlabSnippet loadedSnippet  = gson()
-									.fromJson(json.get(), GitlabSnippet.class);
-			return loadContent(loadedSnippet);
-		}
-		return new GitlabSnippet();
+		JsonElement json = apiClient().get(SNIPPETS_ENDPOINT, snippet.id);
+		GitlabSnippet loadedSnippet  = gson().fromJson(json, GitlabSnippet.class);
+		return loadContent(loadedSnippet);
 	}
 	
-	public Boolean create(GitlabSnippet snippet) throws IOException {
-		Response response = apiClient().post(SNIPPETS_ENDPOINT, 
-												this.gson.toJsonTree(snippet));
-		return response.isSuccessful();
+	public GitlabSnippet create(GitlabSnippet snippet) {
+		JsonElement json = apiClient().post(SNIPPETS_ENDPOINT, this.gson.toJsonTree(snippet));
+		return gson.fromJson(json, GitlabSnippet.class);
 	}
 	
-	public Boolean remove(GitlabSnippet snippet) throws IOException {
-		Response response = apiClient().delete(SNIPPETS_ENDPOINT, snippet.id);
-		return response.isSuccessful();
+	public GitlabSnippet remove(GitlabSnippet snippet){
+		apiClient().delete(SNIPPETS_ENDPOINT, snippet.id);
+		return snippet;
 	}
 	
 	public GitlabApiClient apiClient() {
