@@ -127,7 +127,10 @@ public class GitlabApiClient{
 	}
 	
 	public Response call(URL url) throws IOException {
-		Request request = new Request.Builder().url(url).build();
+		Request request = new Request.Builder()
+					.addHeader("PRIVATE-TOKEN", this.accessToken)
+					.url(url)
+					.build();
 		Call call = http.newCall(request);
 		return call.execute();
 	}

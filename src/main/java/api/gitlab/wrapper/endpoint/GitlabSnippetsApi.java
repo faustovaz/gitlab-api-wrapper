@@ -56,7 +56,7 @@ public class GitlabSnippetsApi {
 	public GitlabSnippet loadContent(GitlabSnippet snippet) {
 		if(snippet != null && snippet.raw_url != null) {
 			String content = apiClient.getRawContent(snippet.raw_url);
-			snippet.raw_url = content;
+			snippet.content = content;
 		}
 		return snippet;
 	}
