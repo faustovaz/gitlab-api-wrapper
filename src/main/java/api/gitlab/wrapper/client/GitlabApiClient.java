@@ -103,7 +103,7 @@ public class GitlabApiClient{
 			Request request = buildRequest(endpoint)
 				.post(RequestBody.create(
 							MediaType.parse("application/json"), 
-							json.getAsString()))
+							json.toString()))
 				.build();
 			Response response = http.newCall(request).execute();
 			checkResponse(response);
