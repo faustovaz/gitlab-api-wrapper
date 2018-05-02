@@ -16,7 +16,9 @@ public class GitlabSnippet {
 	public String visibility;
 	public String content;
 	
-	public GitlabSnippet(){}
+	public GitlabSnippet(){
+		this("","","");
+	}
 	
 	public GitlabSnippet(Integer id){
 		this.id = id;
