@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 import org.junit.Before;
@@ -66,9 +67,14 @@ public class GitlabSnippetsApiTests {
 	
 	@Test(expected = GitlabApiException.class)
 	public void shouldThrowGitlabApiExceptionIfBadResponse() {
-		GitlabAPI api = new GitlabAPI("https://fake-url.org", "fake-token");
-		List<GitlabSnippet> snippets = api.snippets().allSnippets();
-		assertTrue(snippets.isEmpty());
+		try {
+			GitlabAPI api = new GitlabAPI("https://fake-url.org", "fake-token");
+			List<GitlabSnippet> snippets = api.snippets().allSnippets();
+			assertTrue(snippets.isEmpty());
+		}
+		catch(MalformedURLException e) {
+			
+		}
 	}
 	
 }
